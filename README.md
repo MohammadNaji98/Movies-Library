@@ -4,7 +4,7 @@
 
 ## WRRC
 
-![image](./Image/favorite.jpg)
+![image](./Image/homepage.jpg)
 
 ![image](./Image/favorite.jpg)
 
@@ -27,3 +27,15 @@ const app = express();}
 
 1. Its Easy to use.
 2. Its have a new Hollywoods Movies
+
+## APIs today work
+
+## WRRC
+
+![image](./Image/trending.jpg)
+
+![image](./Image/search.jpg)
+
+## Descreption
+
+Now we get API from 3rd party, and we git the data from another server :)
