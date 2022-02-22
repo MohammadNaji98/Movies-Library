@@ -8,22 +8,12 @@ const axios = require("axios");
 const dotenv = require("dotenv");
 dotenv.config();
 const APIKEY = process.env.APIKEY;
-function Movie(title, genre_ids, original_language, original_title, poster_path, video, vote_average, overview, release_date, vote_count, id, adult, backdrop_path, popularity, media_type) {
-    this.title = title;
-    this.genre_ids = genre_ids;
-    this.original_language = original_language;
-    this.original_title = original_title;
-    this.poster_path = poster_path;
-    this.video = video;
-    this.vote_average = vote_average;
-    this.overview = overview;
-    this.release_date = release_date;
-    this.vote_count = vote_count;
+function Movie(id,title,release_date,poster_path, overview) {
     this.id = id;
-    this.adult = adult;
-    this.backdrop_path = backdrop_path;
-    this.popularity = popularity;
-    this.media_type = media_type;
+    this.release_date = release_date;
+    this.title = title;
+    this.poster_path = poster_path;
+    this.overview = overview;   
 }
 app.get('/', homePageHandler);
 app.get('/favorite', favoritePageHandler);
@@ -33,7 +23,7 @@ app.use(errorHandler);
 function homePageHandler(req, res) {
     let result = [];
     movie.data.forEach((value) => {
-        let oneMovie = new Movie(value.title || "N/A", value.poster_path || "N/A", value.overview || "N/A");
+        let oneMovie = new Movie(value.id ||"N/A",value.title || "N/A", value.release_date ||"N/A", value.poster_path || "N/A", value.overview || "N/A");
         result.push(oneMovie);
 
     });
@@ -43,6 +33,7 @@ function favoritePageHandler(req, res) {
 
     return res.status(200).send("Welcome to Favorite Page!!");
 }
+//APIKEY=a527a52ed616ad124e9fe0d2c1308a8b
 function trendingPageHandler(req, res) {
     let result = [];
     let response = axios.get(`https://api.themoviedb.org/3/trending/all/week?api_key=${APIKEY}&language=en-US`)
@@ -77,8 +68,8 @@ app.listen(4000, () => {
 });
 function errorHandler(error, req, res) {
     const err = {
-        status: 500,
+        status: 404,
         message: error
     }
-    return res.status(500).send(err);
+    return res.status(404).send(err);
 }
