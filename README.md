@@ -39,3 +39,17 @@ const app = express();}
 ## Descreption
 
 Now we get API from 3rd party, and we git the data from another server :)
+
+## WRRC
+
+### INSERT Data to database
+
+![image](./Image/addMovieToDB.jpg)
+
+### INSERT Data to database
+
+![image](./Image/getMovieFromDB.jpg)
+
+## Descreption
+
+We created a database, added data to it and retrieved it from it :)
