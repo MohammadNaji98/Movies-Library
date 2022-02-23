@@ -28,6 +28,8 @@ const app = express();}
 1. Its Easy to use.
 2. Its have a new Hollywoods Movies
 
+# ____________________________________________________________________________
+
 ## APIs today work
 
 ## WRRC
@@ -40,16 +42,40 @@ const app = express();}
 
 Now we get API from 3rd party, and we git the data from another server :)
 
+# ____________________________________________________________________________
+
 ## WRRC
 
 ### INSERT Data to database
 
 ![image](./Image/addMovieToDB.jpg)
 
-### INSERT Data to database
+### GET Data from database
 
 ![image](./Image/getMovieFromDB.jpg)
 
 ## Descreption
 
 We created a database, added data to it and retrieved it from it :)
+
+# ____________________________________________________________________________
+
+## WRRC
+
+### UPDATE Data into database
+
+![image](./Image/update.jpg)
+
+### DELETE Data to database
+
+![image](./Image/delete.jpg)
+
+### GET Data from database via Id
+
+![image](./Image/getMovieViaId.jpg)
+
+## Descreption
+
+We update and delete data into Datebase :)
+
+# ____________________________________________________________________________

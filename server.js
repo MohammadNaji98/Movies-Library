@@ -26,6 +26,10 @@ app.get('/trending', trendingPageHandler);
 app.get('/search', searchPageHandler);
 app.post('/addMovie', addMovieHandler);
 app.get('/getMovies', getMoviesHandler);
+app.put('/UPDATE/:id', updateHandler);
+app.delete('/DELETE/:id', deleteHandler);
+app.get('/getMovie/:id', getMovieByIdHandler);
+
 app.get("*", notFoundHandler);
 
 app.use(errorHandler);
@@ -110,6 +114,62 @@ function getMoviesHandler(req, res) {
     });
 }
 
+//update function
+/* Use this into your Client 
+http://localhost:4000/UPDATE/10
+{
+        "my_comment": "Best movie ever 'This is update sql commant'"
+    }
+*/
+function updateHandler(req, res) {
+    const id = req.params.id;
+    const movieUpdate = req.body;
+
+    const sql = `UPDATE addMovie SET my_comment=$1 WHERE id=$2 RETURNING *;`;
+    const values = [movieUpdate.my_comment, id];
+
+    client.query(sql, values).then((result) => {
+        return res.status(200).json(result.rows);
+    }).catch((error) => {
+        errorHandler(error, req, res);
+    })
+}
+
+//delete Function
+//http://localhost:4000/DELETE/10
+function deleteHandler(req, res) {
+    const id = req.params.id;
+    const movieDel = req.body;
+
+    const sql = `DELETE FROM addMovie WHERE id=$1 ;`;
+    const value = [id];
+
+    client.query(sql, value)
+        .then((result) => {
+            return res.status(204).json({});
+        }).catch((error) => {
+            errorHandler(error, req, res);
+        })
+}
+
+//get Movie By Id function
+//http://localhost:4000/getMovie/5
+function getMovieByIdHandler(req, res) {
+    const id = req.params.id;
+
+    const sql = `SELECT * FROM addMovie WHERE id=$1 ;`;
+    const value = [id];
+
+    client.query(sql, value)
+        .then((result) => {
+            return res.status(200).json(result.rows);
+        }).catch((error) => {
+            errorHandler(error, req, res);
+        })
+
+}
+
+
 //Connect to DB
 client.connect()
     .then(() => {
@@ -121,7 +181,7 @@ client.connect()
     })
 
 
-//Error Function
+//Error Functions
 function errorHandler(error, req, res) {
     const err = {
         status: 500,
