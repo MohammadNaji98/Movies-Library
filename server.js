@@ -26,6 +26,8 @@ app.get('/trending', trendingPageHandler);
 app.get('/search', searchPageHandler);
 app.post('/addMovie', addMovieHandler);
 app.get('/getMovies', getMoviesHandler);
+app.get("*", notFoundHandler);
+
 app.use(errorHandler);
 
 // homepage function
@@ -50,7 +52,7 @@ function trendingPageHandler(req, res) {
     let response = axios.get(`https://api.themoviedb.org/3/trending/all/week?api_key=${APIKEY}&language=en-US`)
         .then(apiResponse => {
             apiResponse.data.results.map(value => {
-                let oneMovie = new Movie(value.id || "N/A", value.title || "N/A", value.release_date || "N/A", value.poster_path || "N/A", value.overview || "N/A");
+                // let oneMovie = new Movie(value.id || "N/A", value.title || "N/A", value.release_date || "N/A", value.poster_path || "N/A", value.overview || "N/A");
                 result.push(oneMovie);
             });
             return res.status(200).json(result);
@@ -89,7 +91,7 @@ function addMovieHandler(req, res) {
     const movieV = req.body;
     const sql = `INSERT INTO addMovie(release_date,title,poster_path,overview,my_comment) VALUES($1,$2,$3,$4,$5) RETURNING *;`;
     //console.log(req.body);
-    const values = [movieV.release_date, movieV.title, movieV.poster_path, movieV.overview,movieV.my_comment];
+    const values = [movieV.release_date, movieV.title, movieV.poster_path, movieV.overview, movieV.my_comment];
     client.query(sql, values).then((result) => {
         res.status(201).json(result.rows);
     }).catch(error => {
@@ -99,7 +101,7 @@ function addMovieHandler(req, res) {
 
 //getMovies function
 
-function getMoviesHandler(req,res) {
+function getMoviesHandler(req, res) {
     const sql = `SELECT * FROM addMovie;`;
     client.query(sql).then((result) => {
         res.status(201).json(result.rows);
@@ -116,14 +118,18 @@ client.connect()
         });
     }).catch(error => {
         errorHandler(error, req, res);
-    });
+    })
 
 
-    //Error Function
+//Error Function
 function errorHandler(error, req, res) {
     const err = {
-        status: 404,
+        status: 500,
         message: error
     }
-    return res.status(404).send(err);
+    return res.status(500).send(err);
+}
+function notFoundHandler(req, res) {
+    return res.status(404).send("Not Found :404");
+
 }
