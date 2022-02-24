@@ -10,6 +10,7 @@ const pg = require("pg");
 dotenv.config();
 const APIKEY = process.env.APIKEY;
 const DATABASE_URL = process.env.DATABASE_URL;
+const PORT=process.env.PORT;
 
 const client = new pg.Client(DATABASE_URL);
 function Movie(id, title, release_date, poster_path, overview) {
@@ -56,7 +57,7 @@ function trendingPageHandler(req, res) {
     let response = axios.get(`https://api.themoviedb.org/3/trending/all/week?api_key=${APIKEY}&language=en-US`)
         .then(apiResponse => {
             apiResponse.data.results.map(value => {
-                // let oneMovie = new Movie(value.id || "N/A", value.title || "N/A", value.release_date || "N/A", value.poster_path || "N/A", value.overview || "N/A");
+                let oneMovie = new Movie(value.id || "N/A", value.title || "N/A", value.release_date || "N/A", value.poster_path || "N/A", value.overview || "N/A");
                 result.push(oneMovie);
             });
             return res.status(200).json(result);
@@ -156,7 +157,6 @@ function deleteHandler(req, res) {
 //http://localhost:4000/getMovie/5
 function getMovieByIdHandler(req, res) {
     const id = req.params.id;
-
     const sql = `SELECT * FROM addMovie WHERE id=$1 ;`;
     const value = [id];
 
@@ -168,17 +168,6 @@ function getMovieByIdHandler(req, res) {
         })
 
 }
-
-
-//Connect to DB
-client.connect()
-    .then(() => {
-        app.listen(4000, () => {
-            console.log("Test :)");
-        });
-    }).catch(error => {
-        errorHandler(error, req, res);
-    })
 
 
 //Error Functions
@@ -193,3 +182,14 @@ function notFoundHandler(req, res) {
     return res.status(404).send("Not Found :404");
 
 }
+
+//Connect to DB
+client.connect()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log("Test :)");
+        });
+    }).catch(error => {
+        console.log(error);
+    })
+
