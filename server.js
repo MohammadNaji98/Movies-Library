@@ -10,9 +10,9 @@ const pg = require("pg");
 dotenv.config();
 const APIKEY = process.env.APIKEY;
 const DATABASE_URL = process.env.DATABASE_URL;
-const PORT=process.env.PORT;
+const PORT = process.env.PORT;
 
-//const client = new pg.Client(DATABASE_URL);
+// const client = new pg.Client(DATABASE_URL);
 const client = new pg.Client({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
@@ -34,10 +34,9 @@ app.get('/getMovies', getMoviesHandler);
 app.put('/UPDATE/:id', updateHandler);
 app.delete('/DELETE/:id', deleteHandler);
 app.get('/getMovie/:id', getMovieByIdHandler);
-
 app.get("*", notFoundHandler);
-
 app.use(errorHandler);
+
 
 // homepage function
 function homePageHandler(req, res) {
@@ -81,6 +80,7 @@ function searchPageHandler(req, res) {
             apiResponse.data.results.map(value => {
                 let oneMovie = new Movie(value.id || "N/A", value.title || "N/A", value.release_date || "N/A", value.poster_path || "N/A", value.overview || "N/A");
                 result.push(oneMovie);
+                //i=k; errorHandler check 
             });
             return res.status(200).json(result);
         }).catch(error => {
@@ -178,7 +178,7 @@ function getMovieByIdHandler(req, res) {
 function errorHandler(error, req, res) {
     const err = {
         status: 500,
-        message: error
+        message: error.message
     }
     return res.status(500).send(err);
 }
