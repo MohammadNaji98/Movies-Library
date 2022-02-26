@@ -40,22 +40,31 @@ app.use(errorHandler);
 
 // homepage function
 function homePageHandler(req, res) {
-    let result = [];
+    try {
+        let result = [];
     movie.data.forEach((value) => {
         let oneMovie = new Movie(value.id || "N/A", value.title || "N/A", value.release_date || "N/A", value.poster_path || "N/A", value.overview || "N/A");
         result.push(oneMovie);
 
     });
     return res.status(200).json(result);
+    } catch (error) {
+        errorHandler(error,req,res);
+    }
 }
 // favorite function 
 function favoritePageHandler(req, res) {
 
-    return res.status(200).send("Welcome to Favorite Page!!");
+    try {
+        return res.status(200).send("Welcome to Favorite Page!!");
+    } catch (error) {
+        errorHandler(error,req,res);
+    }
 }
 //APIKEY=a527a52ed616ad124e9fe0d2c1308a8b
 // trending function
 function trendingPageHandler(req, res) {
+   try {
     let result = [];
     let response = axios.get(`https://api.themoviedb.org/3/trending/all/week?api_key=${APIKEY}&language=en-US`)
         .then(apiResponse => {
@@ -67,12 +76,17 @@ function trendingPageHandler(req, res) {
         }).catch(error => {
             errorHandler(error, req, res);
         });
+   } catch (error) {
+    errorHandler(error, req, res);
+   }
 }
 
 // Search Function
 function searchPageHandler(req, res) {
     //This is PostMan link to query http://localhost:4000/search?Movie=Lord
+    try {
     const search = req.query.Movie;
+    //i=u;
     let result = [];
     console.log(req);
     let response = axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${APIKEY}&language=en-US&query=${search}&page=2`)
@@ -86,6 +100,9 @@ function searchPageHandler(req, res) {
         }).catch(error => {
             errorHandler(error, req, res);
         });
+    } catch (error) {
+        errorHandler(error, req, res);
+    }
 }
 /* insert this into client "PostMan"
 {
@@ -97,6 +114,7 @@ function searchPageHandler(req, res) {
     }
 */
 function addMovieHandler(req, res) {
+   try {
     const movieV = req.body;
     const sql = `INSERT INTO addMovie(release_date,title,poster_path,overview,my_comment) VALUES($1,$2,$3,$4,$5) RETURNING *;`;
     //console.log(req.body);
@@ -106,17 +124,24 @@ function addMovieHandler(req, res) {
     }).catch(error => {
         errorHandler(error, req, res);
     });
+   } catch (error) {
+    errorHandler(error, req, res);
+   }
 };
 
 //getMovies function
 
 function getMoviesHandler(req, res) {
-    const sql = `SELECT * FROM addMovie;`;
+    try {
+        const sql = `SELECT * FROM addMovie;`;
     client.query(sql).then((result) => {
         res.status(201).json(result.rows);
     }).catch(error => {
         errorHandler(error, req, res);
     });
+    } catch (error) {
+        errorHandler(error, req, res);
+    }
 }
 
 //update function
@@ -127,7 +152,8 @@ http://localhost:4000/UPDATE/10
     }
 */
 function updateHandler(req, res) {
-    const id = req.params.id;
+    try {
+        const id = req.params.id;
     const movieUpdate = req.body;
 
     const sql = `UPDATE addMovie SET my_comment=$1 WHERE id=$2 RETURNING *;`;
@@ -138,12 +164,16 @@ function updateHandler(req, res) {
     }).catch((error) => {
         errorHandler(error, req, res);
     })
+    } catch (error) {
+        errorHandler(error, req, res);
+    }
 }
 
 //delete Function
 //http://localhost:4000/DELETE/10
 function deleteHandler(req, res) {
-    const id = req.params.id;
+    try {
+        const id = req.params.id;
     const movieDel = req.body;
 
     const sql = `DELETE FROM addMovie WHERE id=$1 ;`;
@@ -155,12 +185,16 @@ function deleteHandler(req, res) {
         }).catch((error) => {
             errorHandler(error, req, res);
         })
+    } catch (error) {
+        errorHandler(error, req, res);
+    }
 }
 
 //get Movie By Id function
 //http://localhost:4000/getMovie/5
 function getMovieByIdHandler(req, res) {
-    const id = req.params.id;
+    try {
+        const id = req.params.id;
     const sql = `SELECT * FROM addMovie WHERE id=$1 ;`;
     const value = [id];
 
@@ -170,6 +204,9 @@ function getMovieByIdHandler(req, res) {
         }).catch((error) => {
             errorHandler(error, req, res);
         })
+    } catch (error) {
+        errorHandler(error, req, res);
+    }
 
 }
 
