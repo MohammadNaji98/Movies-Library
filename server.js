@@ -223,7 +223,14 @@ function notFoundHandler(req, res) {
     return res.status(404).send("Not Found :404");
 
 }
+function serverError(error) {
+    const err = {
+        status: 500,
+        message: error.message
+    }
+    console.log(err);    
 
+}
 //Connect to DB
 client.connect()
     .then(() => {
@@ -231,6 +238,6 @@ client.connect()
             console.log("Test :)");
         });
     }).catch(error => {
-        console.log(error);
+        serverError(error);
     })
 
