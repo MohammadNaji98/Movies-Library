@@ -7,6 +7,8 @@ const app = express();
 const axios = require("axios");
 const dotenv = require("dotenv");
 const pg = require("pg");
+const cors = require("cors");
+app.use(cors());
 dotenv.config();
 const APIKEY = process.env.APIKEY;
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -42,14 +44,14 @@ app.use(errorHandler);
 function homePageHandler(req, res) {
     try {
         let result = [];
-    movie.data.forEach((value) => {
-        let oneMovie = new Movie(value.id || "N/A", value.title || "N/A", value.release_date || "N/A", value.poster_path || "N/A", value.overview || "N/A");
-        result.push(oneMovie);
+        movie.data.forEach((value) => {
+            let oneMovie = new Movie(value.id || "N/A", value.title || "N/A", value.release_date || "N/A", value.poster_path || "N/A", value.overview || "N/A");
+            result.push(oneMovie);
 
-    });
-    return res.status(200).json(result);
+        });
+        return res.status(200).json(result);
     } catch (error) {
-        errorHandler(error,req,res);
+        errorHandler(error, req, res);
     }
 }
 // favorite function 
@@ -58,48 +60,48 @@ function favoritePageHandler(req, res) {
     try {
         return res.status(200).send("Welcome to Favorite Page!!");
     } catch (error) {
-        errorHandler(error,req,res);
+        errorHandler(error, req, res);
     }
 }
 //APIKEY=a527a52ed616ad124e9fe0d2c1308a8b
 // trending function
 function trendingPageHandler(req, res) {
-   try {
-    let result = [];
-    let response = axios.get(`https://api.themoviedb.org/3/trending/all/week?api_key=${APIKEY}&language=en-US`)
-        .then(apiResponse => {
-            apiResponse.data.results.map(value => {
-                let oneMovie = new Movie(value.id || "N/A", value.title || "N/A", value.release_date || "N/A", value.poster_path || "N/A", value.overview || "N/A");
-                result.push(oneMovie);
+    try {
+        let result = [];
+        let response = axios.get(`https://api.themoviedb.org/3/trending/all/week?api_key=${APIKEY}&language=en-US`)
+            .then(apiResponse => {
+                apiResponse.data.results.map(value => {
+                    let oneMovie = new Movie(value.id || "N/A", value.title || "N/A", value.release_date || "N/A", value.poster_path || "N/A", value.overview || "N/A");
+                    result.push(oneMovie);
+                });
+                return res.status(200).json(result);
+            }).catch(error => {
+                errorHandler(error, req, res);
             });
-            return res.status(200).json(result);
-        }).catch(error => {
-            errorHandler(error, req, res);
-        });
-   } catch (error) {
-    errorHandler(error, req, res);
-   }
+    } catch (error) {
+        errorHandler(error, req, res);
+    }
 }
 
 // Search Function
 function searchPageHandler(req, res) {
     //This is PostMan link to query http://localhost:4000/search?Movie=Lord
     try {
-    const search = req.query.Movie;
-    //i=u;
-    let result = [];
-    console.log(req);
-    let response = axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${APIKEY}&language=en-US&query=${search}&page=2`)
-        .then(apiResponse => {
-            apiResponse.data.results.map(value => {
-                let oneMovie = new Movie(value.id || "N/A", value.title || "N/A", value.release_date || "N/A", value.poster_path || "N/A", value.overview || "N/A");
-                result.push(oneMovie);
-                //i=k; errorHandler check 
+        const search = req.query.Movie;
+        //i=u;
+        let result = [];
+        console.log(req);
+        let response = axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${APIKEY}&language=en-US&query=${search}&page=2`)
+            .then(apiResponse => {
+                apiResponse.data.results.map(value => {
+                    let oneMovie = new Movie(value.id || "N/A", value.title || "N/A", value.release_date || "N/A", value.poster_path || "N/A", value.overview || "N/A");
+                    result.push(oneMovie);
+                    //i=k; errorHandler check 
+                });
+                return res.status(200).json(result);
+            }).catch(error => {
+                errorHandler(error, req, res);
             });
-            return res.status(200).json(result);
-        }).catch(error => {
-            errorHandler(error, req, res);
-        });
     } catch (error) {
         errorHandler(error, req, res);
     }
@@ -114,19 +116,19 @@ function searchPageHandler(req, res) {
     }
 */
 function addMovieHandler(req, res) {
-   try {
-    const movieV = req.body;
-    const sql = `INSERT INTO addMovie(release_date,title,poster_path,overview,my_comment) VALUES($1,$2,$3,$4,$5) RETURNING *;`;
-    //console.log(req.body);
-    const values = [movieV.release_date, movieV.title, movieV.poster_path, movieV.overview, movieV.my_comment];
-    client.query(sql, values).then((result) => {
-        res.status(201).json(result.rows);
-    }).catch(error => {
+    try {
+        const movieV = req.body;
+        const sql = `INSERT INTO addMovie(release_date,title,poster_path,overview,my_comment) VALUES($1,$2,$3,$4,$5) RETURNING *;`;
+        //console.log(req.body);
+        const values = [movieV.release_date, movieV.title, movieV.poster_path, movieV.overview, movieV.my_comment];
+        client.query(sql, values).then((result) => {
+            res.status(201).json(result.rows);
+        }).catch(error => {
+            errorHandler(error, req, res);
+        });
+    } catch (error) {
         errorHandler(error, req, res);
-    });
-   } catch (error) {
-    errorHandler(error, req, res);
-   }
+    }
 };
 
 //getMovies function
@@ -134,11 +136,11 @@ function addMovieHandler(req, res) {
 function getMoviesHandler(req, res) {
     try {
         const sql = `SELECT * FROM addMovie;`;
-    client.query(sql).then((result) => {
-        res.status(201).json(result.rows);
-    }).catch(error => {
-        errorHandler(error, req, res);
-    });
+        client.query(sql).then((result) => {
+            res.status(201).json(result.rows);
+        }).catch(error => {
+            errorHandler(error, req, res);
+        });
     } catch (error) {
         errorHandler(error, req, res);
     }
@@ -154,16 +156,16 @@ http://localhost:4000/UPDATE/10
 function updateHandler(req, res) {
     try {
         const id = req.params.id;
-    const movieUpdate = req.body;
+        const movieUpdate = req.body;
 
-    const sql = `UPDATE addMovie SET my_comment=$1 WHERE id=$2 RETURNING *;`;
-    const values = [movieUpdate.my_comment, id];
+        const sql = `UPDATE addMovie SET my_comment=$1 WHERE id=$2 RETURNING *;`;
+        const values = [movieUpdate.my_comment, id];
 
-    client.query(sql, values).then((result) => {
-        return res.status(200).json(result.rows);
-    }).catch((error) => {
-        errorHandler(error, req, res);
-    })
+        client.query(sql, values).then((result) => {
+            return res.status(200).json(result.rows);
+        }).catch((error) => {
+            errorHandler(error, req, res);
+        })
     } catch (error) {
         errorHandler(error, req, res);
     }
@@ -174,17 +176,17 @@ function updateHandler(req, res) {
 function deleteHandler(req, res) {
     try {
         const id = req.params.id;
-    const movieDel = req.body;
+        const movieDel = req.body;
 
-    const sql = `DELETE FROM addMovie WHERE id=$1 ;`;
-    const value = [id];
+        const sql = `DELETE FROM addMovie WHERE id=$1 ;`;
+        const value = [id];
 
-    client.query(sql, value)
-        .then((result) => {
-            return res.status(204).json({});
-        }).catch((error) => {
-            errorHandler(error, req, res);
-        })
+        client.query(sql, value)
+            .then((result) => {
+                return res.status(204).json({});
+            }).catch((error) => {
+                errorHandler(error, req, res);
+            })
     } catch (error) {
         errorHandler(error, req, res);
     }
@@ -195,15 +197,15 @@ function deleteHandler(req, res) {
 function getMovieByIdHandler(req, res) {
     try {
         const id = req.params.id;
-    const sql = `SELECT * FROM addMovie WHERE id=$1 ;`;
-    const value = [id];
+        const sql = `SELECT * FROM addMovie WHERE id=$1 ;`;
+        const value = [id];
 
-    client.query(sql, value)
-        .then((result) => {
-            return res.status(200).json(result.rows);
-        }).catch((error) => {
-            errorHandler(error, req, res);
-        })
+        client.query(sql, value)
+            .then((result) => {
+                return res.status(200).json(result.rows);
+            }).catch((error) => {
+                errorHandler(error, req, res);
+            })
     } catch (error) {
         errorHandler(error, req, res);
     }
@@ -228,7 +230,7 @@ function serverError(error) {
         status: 500,
         message: error.message
     }
-    console.log(err);    
+    console.log(err);
 
 }
 //Connect to DB
